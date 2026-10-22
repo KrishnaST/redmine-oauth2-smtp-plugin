@@ -1,5 +1,42 @@
 # Verification status
 
+## Version 2.0.1 — direct Connect Microsoft button
+
+2026-10-22: 51 tests, 235 assertions, zero failures/errors/skips, seed 36631,
+against the target's installed bundle in a disposable directory. Native read-only
+boot passed, including rendering the settings partial and verifying the direct
+connect link's POST data attribute and absence of nested forms. Existing admin,
+CSRF, sudo, state and PKCE tests passed. No live plugin deployment/restart,
+Microsoft sign-in, credential update or actual message submission was performed.
+Browser execution of Redmine UJS remains an end-to-end check after deployment.
+
+## Version 2.0.0 — browser authorization + PKCE
+
+2026-10-22: isolated tests against the installed target bundle passed **50 tests,
+229 assertions, zero failures/errors/skips**, seed 28481. No installation,
+restart, Microsoft authorization, real token exchange or email delivery for v2.
+The initial v2 run exposed three Ruby keyword-vs-positional test-call errors;
+explicit hash arguments corrected those fixtures, and the full rerun passed.
+
+Coverage: S256 challenge/verifier exchange, delegated scope, one-use session/admin
+state, replay/tamper/expiry/denial/settings-change rejection, disconnect fencing,
+SMTP probe failure without grant publication, admin/sudo/CSRF boundaries, actual
+controller redirect/callback behavior, no email on connect, encrypted at-rest
+state with permissions/symlink/key checks, concurrent serialized updates,
+refresh caching/rotation/expiry, persistence-before-return, no scope fallback,
+bounded/sanitized HTTP failures, native MIME/Bcc and loopback STARTTLS/XOAUTH2.
+Controller tests stand in for Redmine auth/sudo hooks; actual Microsoft browser
+and tenant-policy integration remains pending, including callback logging/cookies.
+
+Native v2 read-only boot check passed: `NATIVE_PKCE_BOOT_OK enabled=false`.
+Reusable `tools/verify-native.rb` changes plugin discovery only in its own
+process and verifies registration, routes, OAuth parameter log filtering,
+native connection-view rendering and encrypted-state round-trip with the native
+Redmine key generator in a disposable private test directory.
+The live plugin directory/service/settings were not changed.
+
+## Historical version 1 checks
+
 Target inspected read-only on 22 October 2026:
 Redmine 7.0.2, Rails 8.1.4, Ruby 4.0.6, Mail 2.9.1, net-smtp 0.5.2.
 

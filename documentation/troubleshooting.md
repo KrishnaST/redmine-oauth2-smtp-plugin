@@ -1,21 +1,28 @@
-# Troubleshooting
+# Browser OAuth troubleshooting
 
-| Code | Check |
+Never paste tokens, client secrets, authorization codes or provider bodies into logs.
+
+| Safe code | Action |
 | --- | --- |
-| `INVALID_TENANT_ID`, `INVALID_CLIENT_ID` | Use actual GUIDs; `organizations` is not valid for application credentials. |
-| `INVALID_MAILBOX`, `INVALID_SENDER_NAME`, `INVALID_HELO_DOMAIN` | Review settings; control characters are rejected. |
-| `INVALID_TIMEOUT` | Integer seconds between 1 and 120. |
-| `MISSING_CLIENT_SECRET` | Set one documented service environment variable. |
-| `UNSAFE_SECRET_FILE`, `SECRET_FILE_UNREADABLE` | Regular file, owner service user/root, no group/other permissions, readable by service, protected directory, no symlink. |
-| `TOKEN_HTTP_400`, `TOKEN_HTTP_401`, `TOKEN_HTTP_403` | Check tenant, application credential expiry, admin consent and Exchange application permission. Inspect Entra sign-in diagnostics through an authorized admin; do not log the secret or token. |
-| `TOKEN_HTTP_429` | Microsoft throttling. Review job rate and service policy before retrying. |
-| `INVALID_TOKEN_RESPONSE` | Token endpoint did not supply a usable Bearer token and positive expiry. |
-| `TOKEN_CONNECTION_FAILED` | DNS, outbound 443, trust store or network timeout. |
-| `SMTP_AUTH_REJECTED` | SMTP AUTH policy, correct Enterprise Application service principal, mailbox scope and Send As rights. No fallback to Basic authentication. Cache is invalidated; message is not resent automatically. |
-| `SMTP_TLS_FAILED` | CA trust, server hostname and TLS connectivity. Do not disable verification. |
-| `SMTP_TEMPORARY_FAILURE` | SMTP server busy/throttling. Follow the job queue's reviewed retry policy. |
-| `SMTP_DELIVERY_FAILED` | Connection, recipient/envelope, unsupported SMTP operation or rejected message. Check authorized provider traces and queue status without enabling credential/MIME debug logging. |
-| `PLUGIN_DISABLED` | Save settings with enabled selected before running plugin's test. |
+| INVALID_REDIRECT_URI | Save exact HTTPS Web callback, no query/fragment/userinfo; include actual Redmine prefix. |
+| INVALID_OAUTH_STATE | Use same logged-in admin browser session; restart Connect. Do not replay old callback URLs. |
+| OAUTH_ATTEMPT_EXPIRED_OR_CHANGED | Attempt expired, superseded, cancelled, disconnected, or settings/admin changed. Start again. |
+| MICROSOFT_CONSENT_DENIED | Sign-in was cancelled/denied; resolve tenant consent policy, then reconnect. |
+| STATE_DIRECTORY_REQUIRED | Configure private durable state directory for every worker. |
+| UNSAFE_STATE_DIRECTORY / UNSAFE_STATE_FILE | Correct ownership/0700 directory/0600 files and remove symlink usage through approved operations. |
+| STATE_STORE_FAILED | Check filesystem, permissions and stable Redmine secret_key_base. Wrong key/corruption fails closed. Reconnect after securely clearing obsolete state with workers stopped. |
+| MICROSOFT_RECONNECT_REQUIRED | Missing/mismatched/expired or revoked grant; reconnect. Microsoft HTTP 400 is deliberately sanitized. |
+| REFRESH_TOKEN_REQUIRED | Ensure offline_access consent and confidential Web configuration; reconnect. |
+| INVALID_TOKEN_RESPONSE | Check delegated SMTP.Send consent and provider configuration. No application-only fallback exists. |
+| TOKEN_HTTP_401 | Verify confidential application's client-secret value and expiry. |
+| MAILBOX_AUTHORIZATION_FAILED | Resolve OAuth SMTP AUTH and mailbox permissions/policies; sign in with intended account. No message was sent by Connect. |
+| SMTP_AUTH_REJECTED | Check mailbox SMTP AUTH policy and grant; reconnect if revoked. |
 
-The test page reports SMTP acceptance only. Delivery can still fail afterward;
-check Microsoft message trace and the intended inbox for end-to-end validation.
+Connection status means a locally stored matching grant, not proof it remains
+unrevoked. Refresh/delivery can still require reconnect later. New connections
+stay disabled until explicitly enabled by an administrator. Disconnect also
+disables the plugin, but Microsoft-side grant revocation is a separate action.
+
+If callback login session is lost, inspect HTTPS/proxy/cookie/SameSite settings.
+Do not turn off CSRF protections or change cookie policy blindly. Exclude callback
+query strings from gateway/Tomcat/proxy/APM logs before enabling the flow.

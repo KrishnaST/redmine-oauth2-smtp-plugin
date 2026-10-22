@@ -1,277 +1,91 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Installation and configuration guide for the Paytech Redmine Microsoft 365 SMTP OAuth2 plugin.">
-  <title>Redmine Microsoft 365 SMTP OAuth2 — Installation and Configuration</title>
-  <style>
-    :root { color-scheme: light; --ink: #223046; --muted: #59677a; --navy: #18354e; --accent: #087f8c; --line: #d8e0e8; --paper: #fff; --page: #f2f5f8; }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; scroll-padding-top: 24px; }
-    body { margin: 0; background: var(--page); color: var(--ink); font: 16px/1.65 Arial, Helvetica, sans-serif; }
-    header { padding: 40px max(24px, calc((100vw - 1200px)/2)); background: var(--navy); color: white; }
-    header p { max-width: 850px; margin: 10px 0 0; color: #d9e9f3; }
-    .eyebrow { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; font-weight: bold; }
-    h1 { font-size: clamp(26px, 4vw, 38px); line-height: 1.22; margin: 12px 0; }
-    .layout { max-width: 1250px; margin: 28px auto; padding: 0 24px; display: grid; grid-template-columns: 225px minmax(0, 1fr); gap: 30px; align-items: start; }
-    nav { position: sticky; top: 24px; padding: 18px; border: 1px solid var(--line); border-radius: 10px; background: white; }
-    nav strong { display: block; margin-bottom: 10px; }
-    nav a { display: block; padding: 5px 0; font-size: 14px; text-decoration: none; }
-    a { color: #066879; text-underline-offset: 3px; }
-    a:focus-visible { outline: 3px solid #d79118; outline-offset: 3px; }
-    main { min-width: 0; }
-    section { background: white; padding: 26px 30px; border: 1px solid var(--line); border-radius: 10px; margin-bottom: 22px; }
-    h2 { color: var(--navy); font-size: 23px; line-height: 1.3; margin: 0 0 18px; }
-    h3 { font-size: 17px; margin: 25px 0 8px; }
-    p { margin: 10px 0; }
-    li { margin: 7px 0; }
-    ol, ul { padding-left: 24px; }
-    .note, .warning { padding: 13px 16px; border-left: 4px solid var(--accent); background: #edf8f8; border-radius: 3px; margin: 18px 0; }
-    .warning { border-color: #bb7817; background: #fff6e6; }
-    .muted { color: var(--muted); font-size: 14px; }
-    .table-wrap { overflow-x: auto; }
-    table { border-collapse: collapse; width: 100%; font-size: 14px; margin: 14px 0; }
-    caption { text-align: left; font-weight: bold; margin-bottom: 8px; }
-    th { background: #edf2f7; text-align: left; color: var(--navy); }
-    th, td { border: 1px solid var(--line); padding: 10px 12px; vertical-align: top; overflow-wrap: anywhere; }
-    code { font: .9em/1.5 Consolas, 'Courier New', monospace; background: #edf2f7; padding: 2px 5px; border-radius: 3px; overflow-wrap: anywhere; }
-    pre { background: #172635; color: #e6eff7; padding: 17px; border-radius: 6px; overflow: auto; font-size: 13px; }
-    pre code { background: none; color: inherit; padding: 0; white-space: pre; overflow-wrap: normal; }
-    footer { max-width: 1200px; margin: 0 auto 35px; padding: 0 24px; font-size: 13px; color: var(--muted); }
-    @media (max-width: 850px) { .layout { display: block; padding: 0 14px; } nav { position: static; margin-bottom: 20px; } nav a { display: inline-block; margin-right: 18px; } section { padding: 22px 18px; } }
-    @media print { body { background: white; font-size: 10pt; } header { background: white; color: black; padding: 0 0 18px; } header p { color: #333; } .layout { display: block; padding: 0; margin: 0; } nav { display: none; } section { padding: 16px 0; border: 0; border-bottom: 1px solid #bbb; border-radius: 0; } pre { background: #f4f4f4; color: black; white-space: pre-wrap; } pre code { white-space: pre-wrap; } tr, .note, .warning { break-inside: avoid; } h2, h3 { break-after: avoid; } footer { padding: 0; } }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Paytech · Redmine Microsoft 365 SMTP · Installation</title>
+<style>
+:root{color-scheme:dark;--bg:#191c20;--panel:#24282e;--line:#414750;--text:#edf0f4;--muted:#b8c1cc;--accent:#80c9f5}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.65 system-ui,sans-serif}
+main{max-width:1080px;margin:auto;padding:42px 28px 70px}h1{font-size:34px;line-height:1.2}h2{font-size:23px;margin-top:0}h3{font-size:17px}
+a{color:var(--accent)}header p,.muted{color:var(--muted)}nav{display:flex;flex-wrap:wrap;gap:18px;padding:18px 0}
+section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:25px;margin:20px 0;scroll-margin-top:20px}
+.tag{color:var(--accent);letter-spacing:.13em;font-size:12px;font-weight:700}.note{border-left:4px solid var(--accent);padding:12px 16px;background:#1c303d}
+.warn{border-left-color:#edba76;background:#382e22}code,pre{font:13px/1.6 ui-monospace,Consolas,monospace}code{overflow-wrap:anywhere}pre{background:#15181c;padding:16px;border-radius:6px;overflow:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}td,th{text-align:left;vertical-align:top;border:1px solid var(--line);padding:12px}th{background:#303640}li{margin:7px 0}
+@media print{body{background:white;color:#111}section{break-inside:avoid;background:white}a{color:#14567b}pre{background:#eee}nav{display:none}}
+</style>
 </head>
-<body>
-<header>
-  <div class="eyebrow">Paytech · Administrator guide · Version 1.0.0</div>
-  <h1>Redmine Microsoft 365 SMTP OAuth2</h1>
-  <p>Install and configure direct Microsoft 365 email delivery for native Redmine notifications. No external automation service, SMTP proxy or incoming-mail ticket creation.</p>
-  <p class="muted" style="color:#d9e9f3">Prepared 22 October 2026. Steps below are instructions, not a record of completed production installation.</p>
+<body><main>
+<header><div class="tag">PAYTECH · COM.PAYTECH · VERSION 2.0.1</div>
+<h1>Microsoft 365 SMTP for Redmine</h1>
+<p>Browser sign-in + S256 PKCE · Delegated SMTP.Send · Native outgoing notifications</p>
+<p class="note">Version 2 replaces application-only authentication. It does not use SMTP.SendAsApp. Existing installations must configure a Web callback and connect interactively. Installation does not enable sending.</p>
 </header>
-<div class="layout">
-  <nav aria-label="Guide contents">
-    <strong>Contents</strong>
-    <a href="#overview">1. Scope and prerequisites</a>
-    <a href="#microsoft">2. Microsoft 365 setup</a>
-    <a href="#package">3. Build and install</a>
-    <a href="#credential">4. Configure the credential</a>
-    <a href="#settings">5. Configure Redmine</a>
-    <a href="#testing">6. Test and enable</a>
-    <a href="#operations">7. Operations and rotation</a>
-    <a href="#troubleshooting">8. Troubleshooting</a>
-    <a href="#rollback">9. Rollback</a>
-    <a href="#references">References</a>
-  </nav>
-  <main>
-    <section id="overview">
-      <h2>1. Scope and prerequisites</h2>
-      <p>The plugin replaces the outgoing transport when enabled. Redmine continues to decide which users receive notifications, based on its existing permissions and preferences.</p>
-      <div class="note"><strong>Outbound only.</strong> This plugin never reads a mailbox or creates tickets. It does not disable existing incoming-mail integrations; manage those separately.</div>
-      <div class="table-wrap"><table>
-        <caption>Compatibility and example deployment values</caption>
-        <thead><tr><th scope="col">Component</th><th scope="col">Version / location</th></tr></thead>
-        <tbody>
-          <tr><td>Redmine / Rails</td><td>7.0.2 / 8.1.4</td></tr>
-          <tr><td>Ruby / Mail / net-smtp</td><td>4.0.6 / 2.9.1 / 0.5.2</td></tr>
-          <tr><td>Redmine root</td><td><code>/opt/redmine</code></td></tr>
-          <tr><td>Service / service user</td><td><code>redmine.service</code> / <code>redmine</code></td></tr>
-          <tr><td>Organization / Ruby namespace</td><td><code>com.paytech</code> / <code>Paytech::RedmineMicrosoft365Smtp</code></td></tr>
-        </tbody>
-      </table></div>
-      <p>Paths, service names and accounts below are examples; replace them with your actual values. Required: Redmine administration rights, an approved change window, Microsoft 365 tenant administration support, a sending mailbox, trusted system CA certificates, working DNS and an accurate server clock. Other Redmine versions require separate validation.</p>
-      <ul>
-        <li>Allow outbound HTTPS 443 to <code>login.microsoftonline.com</code>.</li>
-        <li>Allow outbound SMTP 587 to <code>smtp.office365.com</code>.</li>
-        <li>No new inbound firewall port, database table or production gem is required.</li>
-      </ul>
-      <p class="muted">Initial release: one global sending mailbox, commercial Microsoft cloud, client-secret application authentication. No delegated sign-in, Graph transport or certificate-assertion support.</p>
-    </section>
-
-    <section id="microsoft">
-      <h2>2. Microsoft 365 setup</h2>
-      <h3>2.1 Register an Entra application</h3>
-      <ol>
-        <li>Create a dedicated, single-tenant application for Redmine in Microsoft Entra.</li>
-        <li>Record its <strong>Directory (tenant) ID</strong> and <strong>Application (client) ID</strong>.</li>
-        <li>Add the <strong>Office 365 Exchange Online</strong> application permission <code>SMTP.SendAsApp</code>; obtain tenant administrator consent.</li>
-        <li>Create a client secret. Securely retain its <strong>value</strong>, not just its secret ID, and record its expiry.</li>
-      </ol>
-      <p>This plugin uses <code>client_credentials</code> and the scope <code>https://outlook.office365.com/.default</code>. It does not need browser redirects, a refresh token or Microsoft Graph <code>Mail.Send</code>.</p>
-      <h3>2.2 Authorize the sending mailbox in Exchange</h3>
-      <p>Have the Exchange administrator register the application's service principal and grant the required mailbox access and Send As rights only for the intended sender. The <strong>Enterprise Application Object ID</strong> differs from the App Registration Object ID; use Microsoft's procedure to select the correct IDs.</p>
-      <p>Follow the <a href="https://learn.microsoft.com/en-us/exchange/client-developer/legacy-protocols/how-to-authenticate-an-imap-pop-smtp-application-by-using-oauth#use-client-credentials-grant-flow-to-authenticate-smtp-imap-and-pop-connections">Microsoft application-authentication procedure</a>. Verify the resulting scope before enabling the plugin.</p>
-      <h3>2.3 Check SMTP AUTH policy</h3>
-      <p>The administrator must confirm that tenant and mailbox policies permit the required SMTP AUTH access. Read-only Exchange Online checks:</p>
-      <pre><code># Run after connecting to Exchange Online with your approved admin process.
-Get-TransportConfig | Format-List SmtpClientAuthenticationDisabled
-Get-CASMailbox -Identity redmine@example.com |
-    Format-List SmtpClientAuthenticationDisabled</code></pre>
-      <p>A mailbox setting of <code>False</code> enables it; <code>True</code> disables it; an unset value inherits the tenant setting. If approved, the administrator can enable SMTP AUTH for that mailbox:</p>
-      <pre><code>Set-CASMailbox -Identity redmine@example.com -SmtpClientAuthenticationDisabled $false</code></pre>
-      <div class="warning"><strong>Policy review required.</strong> Microsoft documents that Security Defaults can block SMTP AUTH. A mailbox toggle is not proof of access. Do not disable organization-wide protections or enable Basic authentication as a workaround. Have the security administrator approve an appropriate policy or choose another sending design. See <a href="https://learn.microsoft.com/en-us/exchange/clients-and-mobile-in-exchange-online/authenticated-client-smtp-submission">Microsoft SMTP AUTH policy guidance</a>.</div>
-    </section>
-
-    <section id="package">
-      <h2>3. Build and install the plugin</h2>
-      <h3>3.1 Build the installation archive on Windows</h3>
-      <pre><code>Set-Location '/path/to/redmine-oauth2-smtp-plugin'
-.\tools\package.ps1</code></pre>
-      <p>Output: <code>dist\redmine_microsoft365_smtp-1.0.0.zip</code>. The ZIP contains the required top-level folder <code>redmine_microsoft365_smtp</code>, regardless of the repository's name. Git metadata and build outputs are excluded.</p>
-      <h3>3.2 Transfer and extract</h3>
-      <p>Transfer the ZIP to the Redmine server using your approved SSH/SFTP process. Inspect its entries before extraction:</p>
-      <pre><code>unzip -l /path/to/redmine_microsoft365_smtp-1.0.0.zip
-cd /opt/redmine
-test ! -e plugins/redmine_microsoft365_smtp &amp;&amp; echo 'Install directory is available'</code></pre>
-      <p><strong>If the directory already exists, stop:</strong> review the existing version and prepare an upgrade/rollback plan rather than overwriting it. For a new installation, extract as the Redmine service user:</p>
-      <pre><code>cd /opt/redmine
-unzip /path/to/redmine_microsoft365_smtp-1.0.0.zip -d plugins
-test -f plugins/redmine_microsoft365_smtp/init.rb</code></pre>
-      <p>The final path must be <code>/opt/redmine/plugins/redmine_microsoft365_smtp/init.rb</code>. Do not install it under the repository name <code>redmine-oauth2-smtp-plugin</code>.</p>
-      <div class="note">No plugin database migration or <code>bundle update</code> is required. Do not upgrade the host's gems as part of these steps. Preserve the existing SMTP configuration for rollback.</div>
-      <h3>3.3 Run isolated tests</h3>
-      <pre><code>cd /opt/redmine
-bundle exec ruby plugins/redmine_microsoft365_smtp/test/run.rb</code></pre>
-      <p>Use the same Ruby and bundle as the service. Tests use simulated HTTPS and loopback SMTP, fictitious credentials and temporary files. They do not send real email or access the database.</p>
-    </section>
-
-    <section id="credential">
-      <h2>4. Configure the application credential</h2>
-      <p>Credentials are deliberately not entered into the plugin settings form or stored in the Redmine database. Use a restricted file, or an approved service environment variable.</p>
-      <h3>4.1 Provision a private secret file</h3>
-      <p>Create a protected directory, then use your approved secret-provisioning process to write the client-secret value to <code>/etc/redmine/secrets/m365-client-secret</code>. The file must contain only the value, with an optional trailing newline.</p>
-      <pre><code>sudo install -d -o redmine -g redmine -m 0700 /etc/redmine/secrets
-# Provision the secret securely here. Do not put its value in shell arguments.
-sudo chown redmine:redmine /etc/redmine/secrets/m365-client-secret
-sudo chmod 0600 /etc/redmine/secrets/m365-client-secret
-sudo -u redmine test -r /etc/redmine/secrets/m365-client-secret
-stat -c '%a %U %G' /etc/redmine/secrets/m365-client-secret</code></pre>
-      <p>The plugin rejects symlinks, non-regular files, files over 4096 bytes, unsafe ownership and any group/other permissions. Protect the parent directory too. Account for SELinux using your host's approved file-label policy; do not disable SELinux.</p>
-      <h3>4.2 Expose its path to the service</h3>
-      <p>Use a systemd drop-in:</p>
-      <pre><code>sudo systemctl edit redmine.service</code></pre>
-      <p>Enter the following nonsecret setting:</p>
-      <pre><code>[Service]
-Environment="REDMINE_M365_CLIENT_SECRET_FILE=/etc/redmine/secrets/m365-client-secret"</code></pre>
-      <p>Apply the same variable to every background-worker service that delivers Redmine mail. If using an existing environment file instead, preserve its format, ownership and access permissions.</p>
-      <div class="table-wrap"><table>
-        <thead><tr><th scope="col">Variable</th><th scope="col">Behavior</th></tr></thead>
-        <tbody>
-          <tr><td><code>REDMINE_M365_CLIENT_SECRET_FILE</code></td><td>Preferred. Absolute path to the protected secret file.</td></tr>
-          <tr><td><code>REDMINE_M365_CLIENT_SECRET</code></td><td>Alternative secret value supplied by the service environment. Do not disclose it through diagnostics, screenshots, source control or commands.</td></tr>
-        </tbody>
-      </table></div>
-      <p>The file variable takes precedence. An unreadable or unsafe file causes failure; it does not fall back to the alternative value.</p>
-      <h3>4.3 Restart after installation and environment changes</h3>
-      <pre><code>sudo systemctl daemon-reload
-sudo systemctl restart redmine.service
-systemctl is-active redmine.service</code></pre>
-      <p>Restart affected mail-worker services through your normal operating procedure as well. The plugin is still disabled until enabled in its settings.</p>
-    </section>
-
-    <section id="settings">
-      <h2>5. Configure Redmine</h2>
-      <p>Sign in as an administrator and open <strong>Administration → Plugins → Microsoft 365 SMTP OAuth2 → Configure</strong>.</p>
-      <p>Settings path: <code>/settings/plugin/redmine_microsoft365_smtp</code>, with any configured Redmine URL prefix.</p>
-      <div class="table-wrap"><table>
-        <thead><tr><th scope="col">Field</th><th scope="col">Value / guidance</th></tr></thead>
-        <tbody>
-          <tr><td>Enable Microsoft 365 SMTP</td><td>Leave off until the Microsoft and credential steps are complete. Default: off.</td></tr>
-          <tr><td>Tenant ID</td><td>Your directory GUID. Do not use <code>organizations</code> or <code>common</code>.</td></tr>
-          <tr><td>Application / Client ID</td><td>The dedicated Entra application's GUID.</td></tr>
-          <tr><td>Sending mailbox</td><td>For example, <code>redmine@example.com</code>; must match the mailbox authorized for the application.</td></tr>
-          <tr><td>Sender display name</td><td>For example, <code>Redmine</code>. Default: Redmine.</td></tr>
-          <tr><td>EHLO domain</td><td>Host/domain used in the SMTP greeting, for example <code>redmine.example.com</code>. Default: localhost.</td></tr>
-          <tr><td>Connection timeout</td><td>Default 15 seconds; integer from 1 to 120.</td></tr>
-          <tr><td>Read timeout</td><td>Default 30 seconds; integer from 1 to 120.</td></tr>
-        </tbody>
-      </table></div>
-      <p>The SMTP server, port, TLS requirement and OAuth flow are fixed in the plugin. Do not paste an access token into Redmine's native SMTP password field.</p>
-      <p>Set Redmine's normal emission email address to the intended mailbox for consistency. Review notification events, user preferences and background-job configuration separately. The plugin sets From and the SMTP envelope sender to its configured mailbox; Reply-To is retained.</p>
-      <div class="warning">Enabled delivery fails closed if settings, tokens or SMTP authentication are invalid. There is no fallback to the old Basic-auth SMTP transport. Redmine's generic settings page saves values without testing them; validate before broad use.</div>
-    </section>
-
-    <section id="testing">
-      <h2>6. Test and enable</h2>
-      <ol>
-        <li>Confirm prerequisites and save the plugin with its enable checkbox selected during the approved test window.</li>
-        <li>Use the settings-page link to open <code>/admin/microsoft365_smtp/test</code>.</li>
-        <li>Click <strong>Send one test email to me</strong>. This sends a static message only to the signed-in administrator's own primary email address. Sudo-mode reauthentication may be required.</li>
-        <li>Check the inbox and Microsoft message trace. SMTP acceptance does not prove inbox delivery.</li>
-        <li>Perform an authorized ordinary issue-notification test. Check expected recipients, Bcc privacy, attachments and queued delivery.</li>
-        <li>Check failures and queue status before allowing routine traffic. Disable the plugin and investigate if any required check fails.</li>
-      </ol>
-      <p>Never test using arbitrary client recipients or confidential ticket content. Incoming-mail ticket creation is outside this plugin and should remain disabled if not wanted.</p>
-      <h3>What has been verified already</h3>
-      <p>35 tests and 136 assertions passed against the compatibility target's installed gems, including the Paytech namespace checks. A separate native Redmine runner, with database access forced read-only, verified the namespaced plugin's registration, controller loading and default-disabled behavior. No live installation, Microsoft authentication or real email delivery has been performed.</p>
-    </section>
-
-    <section id="operations">
-      <h2>7. Operations and credential rotation</h2>
-      <ul>
-        <li>Tokens are cached in process memory and renewed before expiry. A mutex coordinates renewal across threads; workers have separate caches.</li>
-        <li>Monitor ordinary Redmine delivery failures and job queues. Coordinate worker concurrency with Microsoft mailbox limits.</li>
-        <li>Keep notification permissions and recipient policies in Redmine. This plugin does not grant users additional ticket access.</li>
-        <li>Do not enable SMTP wire/MIME debug logging in production; it may reveal credentials, recipients or message content outside this plugin's safe errors.</li>
-      </ul>
-      <h3>Rotate the client secret</h3>
-      <ol>
-        <li>Create a replacement credential in the same dedicated Entra application before the old credential expires.</li>
-        <li>Update the protected file through the approved secret process, preserving its ownership and permissions. Prefer an atomic replacement to avoid partial reads.</li>
-        <li>File-content changes are detected on the next token request and invalidate the old cache key. Environment-value changes require restarting all affected processes.</li>
-        <li>Explicitly verify a test delivery, then retire the previous credential after the agreed overlap period.</li>
-      </ol>
-      <p>The plugin does not automatically resend after an uncertain SMTP submission, since doing so may create duplicate notifications. Review your job system's retry policy separately.</p>
-    </section>
-
-    <section id="troubleshooting">
-      <h2>8. Troubleshooting</h2>
-      <div class="table-wrap"><table>
-        <thead><tr><th scope="col">Error / symptom</th><th scope="col">Check</th></tr></thead>
-        <tbody>
-          <tr><td>Plugin not listed</td><td>Exact installation directory name, readable init.rb, compatible bundle and completed web/worker restarts.</td></tr>
-          <tr><td><code>INVALID_TENANT_ID</code> / <code>INVALID_CLIENT_ID</code></td><td>Actual GUID values; not tenant aliases or secret IDs.</td></tr>
-          <tr><td><code>MISSING_CLIENT_SECRET</code></td><td>Correct service environment; shell-only variables are not automatically inherited by systemd.</td></tr>
-          <tr><td><code>UNSAFE_SECRET_FILE</code> / <code>SECRET_FILE_UNREADABLE</code></td><td>File ownership, 0600 permissions, parent directories, service-user access, SELinux labels and no symlink.</td></tr>
-          <tr><td><code>TOKEN_HTTP_400</code> / <code>TOKEN_HTTP_401</code> / <code>TOKEN_HTTP_403</code></td><td>Tenant, secret value/expiry, application permission and consent. Use authorized Entra diagnostics; do not expose credentials.</td></tr>
-          <tr><td><code>TOKEN_HTTP_429</code></td><td>Microsoft throttling; review sending rate and retry policy.</td></tr>
-          <tr><td><code>TOKEN_CONNECTION_FAILED</code></td><td>DNS, HTTPS 443, trusted CA store and timeouts.</td></tr>
-          <tr><td><code>SMTP_AUTH_REJECTED</code></td><td>SMTP AUTH policy, Exchange service-principal IDs, scoped mailbox access and Send As authorization.</td></tr>
-          <tr><td><code>SMTP_TLS_FAILED</code></td><td>Trusted certificates and TLS connectivity. Never turn off verification to bypass the error.</td></tr>
-          <tr><td><code>SMTP_DELIVERY_FAILED</code> / <code>SMTP_TEMPORARY_FAILURE</code></td><td>Recipient/envelope problems, SMTP rejection, connection issues or throttling. Inspect approved message traces and queue status.</td></tr>
-          <tr><td>Test accepted but no message</td><td>Junk/quarantine, recipient mailbox and Microsoft message trace.</td></tr>
-          <tr><td>Test succeeds, issue notifications absent</td><td>Redmine notification settings, recipient preferences/permissions, enabled deliveries and background-worker environment.</td></tr>
-        </tbody>
-      </table></div>
-      <p>Additional error descriptions: <a href="troubleshooting.md">troubleshooting reference</a>. Verification details: <a href="verification.md">test and deployment status</a>.</p>
-    </section>
-
-    <section id="rollback">
-      <h2>9. Rollback</h2>
-      <ol>
-        <li>Uncheck <strong>Enable Microsoft 365 SMTP</strong> and save. New deliveries then use Redmine's original configured transport.</li>
-        <li>If that old transport was already failing, disabling the plugin does not repair it. Reconcile failed or uncertain notifications before replaying jobs.</li>
-        <li>If removing the plugin, move its exact directory out of <code>plugins</code> through the approved change process and restart web/worker services. No migration rollback is needed.</li>
-        <li>Remove only this plugin's environment/drop-in configuration if no longer used; do not remove unrelated service settings.</li>
-        <li>Revoke the dedicated Microsoft credential and mailbox permissions when the integration is permanently retired.</li>
-      </ol>
-    </section>
-
-    <section id="references">
-      <h2>References and project files</h2>
-      <ul>
-        <li><a href="../README.md">Plugin README and configuration reference</a></li>
-        <li><a href="verification.md">Verification results and outstanding checks</a></li>
-        <li><a href="architecture.md">Architecture and security design</a></li>
-        <li><a href="https://learn.microsoft.com/en-us/exchange/client-developer/legacy-protocols/how-to-authenticate-an-imap-pop-smtp-application-by-using-oauth">Microsoft: OAuth authentication for SMTP</a></li>
-        <li><a href="https://learn.microsoft.com/en-us/exchange/clients-and-mobile-in-exchange-online/authenticated-client-smtp-submission">Microsoft: SMTP AUTH tenant and mailbox controls</a></li>
-        <li><a href="https://www.redmine.org/projects/redmine/wiki/Plugin_Tutorial">Redmine: plugin conventions</a></li>
-      </ul>
-      <p class="muted">This is a self-contained HTML guide: styles are embedded, no JavaScript or external assets are loaded, and no credentials are included.</p>
-    </section>
-  </main>
-</div>
-<footer>Paytech · Redmine Microsoft 365 SMTP OAuth2 1.0.0 · Installation and Configuration · 22 October 2026</footer>
-</body>
-</html>
+<nav aria-label="Contents"><a href="#microsoft">Microsoft setup</a><a href="#install">Install</a><a href="#connect">Connect</a><a href="#lifecycle">Operations</a><a href="#verify">Verify</a></nav>
+<section id="microsoft"><h2>1. Microsoft Entra setup</h2>
+<ol><li>Use a single-tenant application registration. Record the tenant GUID and application/client GUID.</li>
+<li>Add delegated <code>https://outlook.office.com/SMTP.Send</code>. The plugin also requests <code>offline_access</code>. Grant consent as required by tenant policy.</li>
+<li>Add a <strong>Web</strong> redirect URI (not SPA):<pre>https://redmine.example.com/admin/microsoft365_smtp/callback</pre>Use your actual public HTTPS hostname and any Redmine URL prefix. The saved URI must match exactly.</li>
+<li>Create a confidential-client secret. Store its <strong>Value</strong>, not Secret ID, in a private service file. Record its expiry and plan rotation.</li>
+<li>Ensure OAuth SMTP AUTH is allowed for the sending mailbox and tenant sign-in/MFA policies permit access.</li></ol>
+<p>No application SMTP.SendAsApp, Exchange app service-principal grant, Graph User.Read/Mail.Send, implicit flow, or public-client/device-code activation is required by this implementation.</p>
+<p class="note warn">Do not disable tenant protections merely to force SMTP access. A tenant administrator may still need to approve delegated consent or mailbox protocol access.</p>
+</section>
+<section id="install"><h2>2. Install or upgrade while disabled</h2>
+<p>Verified target family: Redmine 7.0.2, Rails 8.1.4, Ruby 4.0.6, Mail 2.9.1 and net-smtp 0.5.2 on Linux. No new production gem or database migration.</p>
+<ol><li>Build using <code>tools/package.ps1</code>. Extract <code>dist/redmine_microsoft365_smtp-2.0.1.zip</code> into the Redmine plugins folder.</li>
+<li>For an upgrade, disable the installed plugin and replace its entire folder during an approved change window. Do not merge individual old files.</li>
+<li>Provision private secret/state paths outside web-served locations, owned by the Redmine service account. Examples below use the account <code>redmine</code>:</li></ol>
+<pre>sudo install -d -m 700 -o redmine -g redmine /etc/redmine/secrets
+sudo install -d -m 700 -o redmine -g redmine /var/lib/redmine-m365</pre>
+<p>Provision <code>/etc/redmine/secrets/m365-client-secret</code> through an approved secure mechanism. It must contain only the client-secret value, be a regular non-symlink file, owned by root/service account, mode 0600 or stricter. Do not place secrets in shell history.</p>
+<table><thead><tr><th>Service environment variable</th><th>Value / purpose</th></tr></thead><tbody>
+<tr><td><code>REDMINE_M365_CLIENT_SECRET_FILE</code></td><td><code>/etc/redmine/secrets/m365-client-secret</code>; preferred secret source. Invalid configured file never falls back.</td></tr>
+<tr><td><code>REDMINE_M365_CLIENT_SECRET</code></td><td>Alternative secret environment value, only when no secret-file path is set.</td></tr>
+<tr><td><code>REDMINE_M365_STATE_DIRECTORY</code></td><td><code>/var/lib/redmine-m365</code>; required durable 0700 service-owned directory, no symlink paths.</td></tr>
+</tbody></table>
+<p>Apply the environment to all web and background-worker processes. They must share the same stable Redmine <code>secret_key_base</code> and local state directory. Grants are AES-256-GCM encrypted with a purpose-separated key derived from that secret.</p>
+<p class="note warn">Before browser sign-in, suppress callback query strings in gateway, reverse-proxy, access, APM and analytics logs. Do not log HTTP/SMTP bodies. Rails filters authorization code, state and credentials, but cannot control external logs.</p>
+<p>Restart the affected Redmine services. Keep the prior transport configuration intact for rollback. Examples use generic paths; substitute actual deployment paths and account.</p>
+</section>
+<section id="connect"><h2>3. Configure and connect the mailbox</h2>
+<p>Open Administration → Plugins → Microsoft 365 SMTP OAuth2 → Configure.</p>
+<table><thead><tr><th>Field</th><th>What to enter</th></tr></thead><tbody>
+<tr><td>Enable Microsoft 365 SMTP</td><td>Keep unchecked until connection and prerequisites are ready.</td></tr>
+<tr><td>Tenant / Application IDs</td><td>Your single-tenant registration GUIDs.</td></tr>
+<tr><td>Sending mailbox</td><td>Intended mailbox email address.</td></tr>
+<tr><td>Registered HTTPS Web callback URI</td><td>Exact public URL registered in Entra, including Redmine prefix if present.</td></tr>
+<tr><td>Sender display name / EHLO</td><td>Desired sender name and actual server hostname.</td></tr>
+<tr><td>Timeouts</td><td>15-second connection / 30-second read defaults; allowed range 1–120.</td></tr>
+</tbody></table>
+<ol><li>Save settings while disabled.</li><li>Click the blue <strong>Connect Microsoft</strong> button directly on the settings page. It opens Microsoft sign-in without an intermediate page. The connection-status link provides status and disconnect controls.</li>
+<li>Sign in to Microsoft as the intended sending mailbox. Complete consent/MFA. Return in the same logged-in Redmine administrator browser session.</li>
+<li>The plugin validates one-use state and S256 PKCE, exchanges the code, and checks SMTP AUTH for the configured mailbox. No message is sent.</li>
+<li>Enable only when ready. Open the test page and explicitly send one message to the current administrator's own primary email. Confirm receipt before ordinary notifications.</li></ol>
+<p>Connect does not log users into Redmine, assert identity through Graph/OIDC, or automatically enable delivery. SMTP authentication is not an inbox-delivery guarantee. Only the newest attempt is valid; it expires after ten minutes.</p>
+</section>
+<section id="lifecycle"><h2>4. Operation, security and rollback</h2>
+<ul><li>Refresh tokens renew access automatically. Rotated tokens are encrypted and durably saved before SMTP submission under a cross-process file lock.</li>
+<li>Tenant, client, mailbox or callback changes require reconnecting. Consent revocation, sign-in policy or secret expiry can also require administrator action.</li>
+<li>Disconnect clears local grants/pending attempts and disables the plugin. Revoke the application grant in Microsoft separately when retiring access.</li>
+<li>Uncheck Enable to restore the original configured transport for newly delivered messages. Removing the plugin requires restarting web/workers; no migration.</li>
+<li>Protect the encryption secret and state together. Losing or rotating Redmine's secret_key_base requires reconnecting. Do not delete a lock file while workers are active.</li>
+<li>One installation-wide grant and one pending attempt. Supported storage topology is one host/shared local filesystem, not independent copies across multiple hosts.</li></ul>
+<p>Required outbound network: HTTPS 443 to login.microsoftonline.com; SMTP 587 to smtp.office365.com; DNS, correct time and trusted CA certificates. SMTP uses mandatory STARTTLS, peer verification, TLS 1.2+ and XOAUTH2. No fallback to password/application authentication and no unsafe resend after DATA.</p>
+</section>
+<section id="verify"><h2>5. Verification and troubleshooting</h2>
+<pre>bundle exec ruby plugins/redmine_microsoft365_smtp/test/run.rb</pre>
+<p>Tests use fake Microsoft endpoints and loopback SMTP with fictitious credentials. They do not demonstrate real tenant consent or real email delivery. See <a href="verification.md">verification record</a> for results.</p>
+<table><thead><tr><th>Result / safe code</th><th>Action</th></tr></thead><tbody>
+<tr><td>MICROSOFT_RECONNECT_REQUIRED</td><td>Reconnect; grant is missing, mismatched or rejected.</td></tr>
+<tr><td>INVALID_OAUTH_STATE / OAUTH_ATTEMPT_EXPIRED_OR_CHANGED</td><td>Use the same administrator session and start a fresh attempt.</td></tr>
+<tr><td>STATE_DIRECTORY_REQUIRED / STATE_STORE_FAILED</td><td>Check durable state path, permissions and consistent Redmine encryption secret.</td></tr>
+<tr><td>MAILBOX_AUTHORIZATION_FAILED</td><td>Check sending account, delegated SMTP consent and mailbox/tenant SMTP AUTH policies.</td></tr>
+<tr><td>TOKEN_HTTP_401</td><td>Check client-secret value, application and expiry.</td></tr>
+</tbody></table>
+<p><a href="troubleshooting.md">Full troubleshooting</a> · <a href="architecture.md">Architecture</a> · <a href="../README.md">README</a></p>
+</section>
+<footer class="muted">References: <a href="https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow">Microsoft code flow + PKCE</a> · <a href="https://learn.microsoft.com/en-us/exchange/client-developer/legacy-protocols/how-to-authenticate-an-imap-pop-smtp-application-by-using-oauth">Delegated SMTP OAuth</a> · <a href="https://learn.microsoft.com/en-us/exchange/clients-and-mobile-in-exchange-online/authenticated-client-smtp-submission">SMTP AUTH policy</a></footer>
+</main></body></html>

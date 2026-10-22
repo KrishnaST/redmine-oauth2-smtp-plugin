@@ -1,40 +1,36 @@
-# Architecture and security
+# Architecture — version 2
 
-Organization identifier: `com.paytech`; Ruby namespace:
-`Paytech::RedmineMicrosoft365Smtp`. Implementation files follow Ruby's namespace
-layout under `lib/paytech/`. The Redmine plugin ID remains
-`redmine_microsoft365_smtp`; the dotted organization identifier is not a Java
-package declaration or a Redmine installation-directory name.
+`com.paytech` is the organization identifier. Ruby code lives under
+`Paytech::RedmineMicrosoft365Smtp`; plugin ID remains `redmine_microsoft365_smtp`.
 
-1. Redmine assembles a notification with its normal recipient and permission logic.
-2. Interceptor reads the enabled flag at delivery time; disabled means untouched.
-3. DeliveryMethod validates configuration and asks TokenProvider for a token.
-4. TokenProvider reads the private service credential and requests a scoped
-   client-credentials token from Microsoft's fixed commercial-cloud endpoint.
-5. The SMTP transport requires verified TLS and authenticates using the plugin's
-   namespaced net-smtp Authenticator implementation of Microsoft's SASL format.
-6. Mail::SMTPConnection handles validated envelope addresses and encoded MIME data.
+- Configuration validates GUIDs, headers, timeouts and fixed-purpose HTTPS callback.
+- BrowserConnection requests delegated SMTP.Send/offline_access with S256 PKCE.
+  An admin/sudo/CSRF POST starts a ten-minute attempt. A random state is bound to
+  the existing session; the private store binds its digest, verifier, admin ID,
+  settings fingerprint and expiry. Callback requires an existing admin login,
+  consumes the attempt before exchange, and performs SMTP AUTH without a message.
+  PKCE is mandatory. There is no user-controlled token/authorize host or return URL.
+- GrantStore encrypts grants/pending state with AES-256-GCM and a purpose-derived
+  Redmine key. Private permissions, no-follow opens, atomic fsynced replacement and
+  a stable flock serialize connect/disconnect/rotation across local processes.
+- TokenProvider uses authorization_code or refresh_token only, at the fixed
+  tenant Microsoft HTTPS endpoint. It checks delegated scope and token expiry.
+  Stored tokens are bound to tenant/client/mailbox/callback; changes require
+  reconnect. Rotated refresh tokens are persisted before sending.
+- DeliveryMethod/Interceptor retain native Redmine recipient selection, MIME,
+  Bcc handling, sender enforcement and STARTTLS/XOAUTH2. Disabled plugin leaves
+  the existing transport unchanged; enabled failures do not fall back.
+- Controller keeps admin/test boundaries, sets no-store/no-referrer and exposes
+  no tokens. Connect/disconnect/test use CSRF POST + sudo. Query callback preserves
+  Lax cookies; callback query strings must be suppressed in proxy/access logging.
 
-No core Redmine source is patched. The plugin does not create database tables,
-expose a public callback, process incoming mail or fetch a Microsoft mailbox.
-The only interactive action sends a static test email to the signed-in admin.
-Settings use Redmine's existing administrator-only plugin configuration surface.
+No new database schema, gem, Graph permission or external broker. This is SMTP
+authorization, not OpenID/Redmine login. The configured mailbox is checked by
+SMTP authentication, not by trusting unverified token claims. A real send remains
+necessary to verify Send As, delivery and tenant operational policies.
 
-Application credentials are injected at runtime. Token cache is in-memory only,
-has an expiry margin and is keyed by tenant/client and credential digest. Changes
-to the credential force a new token. Concurrent token refresh is synchronized
-within each process. Multiple processes do not share a refresh token or a disk
-token cache. Cache values and credentials have redacted object inspection.
-
-Provider exceptions are converted into bounded, non-sensitive error codes;
-SMTP/TLS response bodies and nested exception causes are not surfaced. The
-plugin does not bypass TLS, downgrade authentication, follow token redirects,
-or retry a potentially accepted SMTP message. Errors remain visible to Redmine's
-normal delivery monitoring. Keep separate web/worker concurrency within the
-mailbox's SMTP session limits.
-
-Limitations: client-secret application flow only; global outgoing transport,
-one Microsoft 365 mailbox; commercial cloud endpoints; no Graph transport,
-delegated OAuth UI, certificate assertion, incoming email or per-project sender.
-Changes to configuration are validated at send time, not by Redmine's generic
-settings persistence. Enable only after checking prerequisites and testing.
+No background auto-refresh daemon; refresh happens on delivery under the file
+lock. One installation-wide grant/pending attempt is supported. Concurrent
+administrators must coordinate; newest connect supersedes previous connect.
+Disconnect is serialized with connect and invalidates pending attempts. Already
+in-flight SMTP sends cannot be recalled by disconnect.

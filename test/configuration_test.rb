@@ -30,6 +30,18 @@ class ConfigurationTest < Minitest::Test
     assert_raises(Paytech::RedmineMicrosoft365Smtp::ConfigurationError) { configuration(environment: {}).client_secret }
   end
 
+  def test_callback_requires_https_exact_path_and_no_query_or_credentials
+    configuration.validate_browser!
+    ['', 'http://redmine.example.invalid/admin/microsoft365_smtp/callback',
+     'https://user:password@example.invalid/admin/microsoft365_smtp/callback',
+     'https://example.invalid/admin/microsoft365_smtp/callback?code=x',
+     'https://example.invalid/not-callback'].each do |uri|
+      assert_raises(Paytech::RedmineMicrosoft365Smtp::ConfigurationError) do
+        configuration({ 'redirect_uri' => uri }).validate_browser!
+      end
+    end
+  end
+
   def test_secret_file_and_permissions
     Dir.mktmpdir do |directory|
       path = File.join(directory, 'secret')

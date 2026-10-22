@@ -23,8 +23,8 @@ class FrameworkTest < Minitest::Test
     routes.draw do
       instance_eval(File.read(File.expand_path('../config/routes.rb', __dir__)))
     end
-    assert_equal ['GET', 'POST'], routes.routes.map(&:verb)
-    assert routes.routes.all? { |route| route.path.spec.to_s.start_with?('/admin/microsoft365_smtp/test') }
+    assert_equal ['GET', 'POST', 'GET', 'POST', 'GET', 'POST'], routes.routes.map(&:verb)
+    assert routes.routes.all? { |route| route.path.spec.to_s.start_with?('/admin/microsoft365_smtp/') }
     assert_equal '/admin/microsoft365_smtp/test', routes.url_helpers.microsoft365_smtp_test_path
   end
 
@@ -49,11 +49,18 @@ class FrameworkTest < Minitest::Test
     plugin.define_singleton_method(:register) { |_name, &block| registry.instance_eval(&block) }
     Redmine.const_set(:Plugin, plugin)
     2.times { load File.expand_path('../init.rb', __dir__) }
-    assert_equal '1.0.0', registry.values[:version].first.first
+    assert_equal '2.0.1', registry.values[:version].first.first
     assert_equal '0', registry.values[:settings].last[:default]['enabled']
     assert_equal 1, Mail.class_variable_get(:@@delivery_interceptors).count(Paytech::RedmineMicrosoft365Smtp::Interceptor)
   ensure
     ActionMailer::Base.unregister_interceptor(Paytech::RedmineMicrosoft365Smtp::Interceptor)
     Redmine.send(:remove_const, :Plugin) if Redmine.const_defined?(:Plugin)
+  end
+
+  def test_settings_offer_direct_csrf_protected_post_without_nested_forms
+    template = File.read(File.expand_path('../app/views/settings/_microsoft365_smtp.html.erb', __dir__))
+    assert_includes template, "link_to 'Connect Microsoft', microsoft365_smtp_connect_path, method: :post"
+    refute_match(/<form\b|form_tag|button_to/, template)
+    assert_includes template, 'Save settings first'
   end
 end

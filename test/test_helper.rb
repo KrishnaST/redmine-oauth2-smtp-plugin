@@ -10,14 +10,16 @@ module PluginTestSupport
     Paytech::RedmineMicrosoft365Smtp::Configuration.new({
       'enabled' => '1', 'tenant_id' => '11111111-1111-1111-1111-111111111111',
       'client_id' => '22222222-2222-2222-2222-222222222222',
-      'mailbox' => 'redmine@example.invalid', 'helo_domain' => 'redmine.example.invalid'
+      'mailbox' => 'redmine@example.invalid', 'helo_domain' => 'redmine.example.invalid',
+      'redirect_uri' => 'https://redmine.example.invalid/admin/microsoft365_smtp/callback'
     }.merge(overrides), environment: environment)
   end
 
-  def success_response(token: 'test-access-token', lifetime: 3600)
+  def success_response(token: 'test-access-token', lifetime: 3600, refresh: 'test-refresh-token')
     response = Net::HTTPOK.new('1.1', '200', 'OK')
     response.define_singleton_method(:body) do
-      JSON.generate('access_token' => token, 'expires_in' => lifetime, 'token_type' => 'Bearer')
+      JSON.generate('access_token' => token, 'expires_in' => lifetime, 'token_type' => 'Bearer',
+                    'refresh_token' => refresh, 'scope' => 'https://outlook.office.com/SMTP.Send')
     end
     response
   end
@@ -33,7 +35,10 @@ module PluginTestSupport
 
     def request(request)
       @requests << request
-      @responses.length > 1 ? @responses.shift : @responses.first
+      response = @responses.length > 1 ? @responses.shift : @responses.first
+      response.define_singleton_method(:read_body) { |&block| block.call(body) }
+      yield response if block_given?
+      response
     end
   end
 
@@ -50,6 +55,22 @@ module PluginTestSupport
 
     def invalidate!
       @invalidations += 1
+    end
+  end
+
+  class MemoryStore
+    attr_reader :document
+
+    def initialize(document = {})
+      @document = document
+      @mutex = Mutex.new
+    end
+
+    def synchronize
+      @mutex.synchronize do
+        working = Marshal.load(Marshal.dump(@document))
+        yield working, ->(value) { @document = Marshal.load(Marshal.dump(value)) }
+      end
     end
   end
 

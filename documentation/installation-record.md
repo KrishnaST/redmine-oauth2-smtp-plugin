@@ -1,5 +1,14 @@
 # Redmine Microsoft 365 SMTP plugin
 
+## Current source: 2.0.1
+
+Browser authorization code + S256 PKCE replaces application-only authentication.
+Current distribution: `dist/redmine_microsoft365_smtp-2.0.1.zip`.
+Implementation alone does not upgrade an existing live installation. See the
+HTML guide for delegated permission, callback, secret and encrypted-state setup.
+
+## Historical initial release
+
 Source: [plugin README](../README.md).
 Organization identifier: `com.paytech`.
 Ruby namespace: `Paytech::RedmineMicrosoft365Smtp`.

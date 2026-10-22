@@ -1,0 +1,11 @@
+<h2>Microsoft mailbox connection</h2>
+<p>Status: <strong><%= @connected ? 'Connected for the saved settings' : 'Not connected for the saved settings' %></strong></p>
+<p>Save plugin settings first. Sign in to Microsoft as the intended sending mailbox. Microsoft may require MFA and administrator consent. This does not change your Redmine login.</p>
+<p>Connecting verifies SMTP authentication without sending an email. It does not enable notifications automatically. A real test submission is still required.</p>
+<%= form_tag microsoft365_smtp_connect_path, method: :post do %>
+  <%= submit_tag 'Connect / reconnect Microsoft account' %>
+<% end %>
+<%= form_tag microsoft365_smtp_disconnect_path, method: :post do %>
+  <%= submit_tag 'Disconnect and disable plugin', data: { confirm: 'Remove the local OAuth grant and disable Microsoft delivery?' } %>
+<% end %>
+<p><%= link_to 'Plugin settings', plugin_settings_path('redmine_microsoft365_smtp') %> · <%= link_to 'Test email', microsoft365_smtp_test_path %></p>

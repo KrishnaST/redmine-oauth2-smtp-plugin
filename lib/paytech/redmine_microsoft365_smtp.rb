@@ -1,10 +1,13 @@
 # frozen_string_literal: true
 
+require 'base64'
+require 'digest'
 require 'json'
 require 'mail'
 require 'net/http'
 require 'net/smtp'
 require 'openssl'
+require 'securerandom'
 require 'thread'
 require 'uri'
 
@@ -26,7 +29,9 @@ module Paytech::RedmineMicrosoft365Smtp
 end
 
 require_relative 'redmine_microsoft365_smtp/configuration'
+require_relative 'redmine_microsoft365_smtp/grant_store'
 require_relative 'redmine_microsoft365_smtp/token_provider'
 require_relative 'redmine_microsoft365_smtp/xoauth2_authenticator'
+require_relative 'redmine_microsoft365_smtp/browser_connection'
 require_relative 'redmine_microsoft365_smtp/delivery_method'
 require_relative 'redmine_microsoft365_smtp/interceptor'

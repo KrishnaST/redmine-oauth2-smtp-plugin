@@ -5,13 +5,13 @@ module Paytech::RedmineMicrosoft365Smtp
     DEFAULTS = {
       'enabled' => '0', 'tenant_id' => '', 'client_id' => '', 'mailbox' => '',
       'sender_name' => 'Redmine', 'helo_domain' => 'localhost',
-      'open_timeout' => '15', 'read_timeout' => '30'
+      'open_timeout' => '15', 'read_timeout' => '30', 'redirect_uri' => ''
     }.freeze
     UUID = /\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/i
     MAILBOX = /\A[A-Za-z0-9.!#$%&'*+\/=\?^_`{|}~-]+@[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?\z/
 
     attr_reader :tenant_id, :client_id, :mailbox, :sender_name, :helo_domain,
-                :open_timeout, :read_timeout
+                :open_timeout, :read_timeout, :redirect_uri
 
     def self.current
       new(Setting.plugin_redmine_microsoft365_smtp)
@@ -25,6 +25,7 @@ module Paytech::RedmineMicrosoft365Smtp
       @mailbox = @settings['mailbox'].to_s.strip
       @sender_name = @settings['sender_name'].to_s.strip
       @helo_domain = @settings['helo_domain'].to_s.strip
+      @redirect_uri = @settings['redirect_uri'].to_s.strip
     end
 
     def enabled?
@@ -53,6 +54,23 @@ module Paytech::RedmineMicrosoft365Smtp
       raise ConfigurationError, 'MISSING_CLIENT_SECRET' if value.empty?
       raise ConfigurationError, 'INVALID_CLIENT_SECRET' if value.bytesize > 4096 || value.match?(/[\r\n\x00]/)
       value
+    end
+
+    def connection_identity
+      Digest::SHA256.hexdigest([tenant_id.downcase, client_id.downcase, mailbox.downcase, redirect_uri].join("\x00"))
+    end
+
+    def validate_browser!
+      validate!
+      uri = URI.parse(redirect_uri)
+      unless uri.scheme == 'https' && uri.host && !uri.userinfo && !uri.query && !uri.fragment &&
+             uri.path.end_with?('/admin/microsoft365_smtp/callback')
+        raise ConfigurationError, 'INVALID_REDIRECT_URI'
+      end
+      client_secret
+      self
+    rescue URI::InvalidURIError
+      raise ConfigurationError, 'INVALID_REDIRECT_URI', cause: nil
     end
 
     # Avoid exposing identifiers or credentials in framework exception inspection.
