@@ -1,6 +1,6 @@
 # Paytech Redmine Microsoft 365 SMTP OAuth2
 
-Version **2.0.2**: delegated Microsoft browser authorization with **S256 PKCE**.
+Version **2.0.3**: delegated Microsoft browser authorization with **S256 PKCE**.
 The settings page includes a direct **Connect Microsoft** button, like the
 reference email sender. Save settings, then click once to open Microsoft sign-in.
 Native Redmine UJS uses a CSRF-protected POST, not a state-changing GET or nested form.
@@ -43,12 +43,13 @@ delivery. An authorized real test is required before enabling ordinary traffic.
 ## Installation and upgrade
 
 1. Package with `./tools/package.ps1` in PowerShell. Output:
-   `dist/redmine_microsoft365_smtp-2.0.2.zip`.
+   `dist/redmine_microsoft365_smtp-2.0.3.zip`.
 2. Disable any installed version first. Deploy during an approved change window.
    Replace the whole plugin directory, not individual files; preserve private
    operational secrets outside the plugin tree. No migrations are needed.
 3. Extract the canonical archive folder under `/opt/redmine/plugins/`.
-4. Provision a private secret and private durable state directory for the service
+4. Enter the client-secret Value on the plugin settings page (saved encrypted),
+   or optionally provision a private secret file. Provision a durable state directory for the service
    account, e.g. `/etc/redmine/secrets/m365-client-secret` (0600) and
    `/var/lib/redmine-m365` (0700). The state directory must be owned by the
    service account, absolute, not symlinked or web-served. Its ancestors must not
@@ -83,7 +84,7 @@ Do not copy a client secret into shell history, command-line arguments or docs.
 
 | Variable | Purpose |
 | --- | --- |
-| `REDMINE_M365_CLIENT_SECRET_FILE` | Preferred secret source: regular non-symlink file, root/service owner, mode 0600 or stricter, maximum 4096 bytes. Contains only the Entra client-secret value. |
+| `REDMINE_M365_CLIENT_SECRET_FILE` | Optional fallback when no page secret exists: regular non-symlink file, root/service owner, mode 0600 or stricter, maximum 4096 bytes. Contains only the Entra client-secret value. |
 | `REDMINE_M365_CLIENT_SECRET` | Alternative runtime secret; not used if a secret-file path is configured, even if that file is invalid. |
 | `REDMINE_M365_STATE_DIRECTORY` | Required private durable 0700 directory owned by service account. Encrypted `grant.enc` and 0600 cross-process `grant.lock`. Shared by web/workers on the same host. |
 
@@ -93,6 +94,12 @@ Back up the state together with the Redmine encryption secret using approved
 secret-handling controls; losing/rotating `secret_key_base` requires reconnecting.
 Do not delete a lock file while workers are active. This file store supports one
 host/shared local filesystem, not independent multi-host state copies.
+
+The masked Client secret field saves AES-256-GCM ciphertext in the existing
+plugin Setting row, using a purpose-separated Redmine encryption key. Blank
+preserves; Remove page-managed secret clears it and restores server fallback.
+The page value takes precedence over file/environment. Corrupt ciphertext fails
+closed, never falls back. See [page secret reference](documentation/page-client-secret.md).
 
 ## Endpoints and network dependencies
 

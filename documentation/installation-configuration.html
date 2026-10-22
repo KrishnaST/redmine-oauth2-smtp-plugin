@@ -18,7 +18,7 @@ table{border-collapse:collapse;width:100%;font-size:14px}td,th{text-align:left;v
 </style>
 </head>
 <body><main>
-<header><div class="tag">PAYTECH · COM.PAYTECH · VERSION 2.0.2</div>
+<header><div class="tag">PAYTECH · COM.PAYTECH · VERSION 2.0.3</div>
 <h1>Microsoft 365 SMTP for Redmine</h1>
 <p>Browser sign-in + S256 PKCE · Delegated SMTP.Send · Native outgoing notifications</p>
 <p class="note">Version 2 replaces application-only authentication. It does not use SMTP.SendAsApp. Existing installations must configure a Web callback and connect interactively. Installation does not enable sending.</p>
@@ -28,21 +28,21 @@ table{border-collapse:collapse;width:100%;font-size:14px}td,th{text-align:left;v
 <ol><li>Use a single-tenant application registration. Record the tenant GUID and application/client GUID.</li>
 <li>Add delegated <code>https://outlook.office.com/SMTP.Send</code>. The plugin also requests <code>offline_access</code>. Grant consent as required by tenant policy.</li>
 <li>Add a <strong>Web</strong> redirect URI (not SPA):<pre>https://redmine.example.com/admin/microsoft365_smtp/callback</pre>Use your actual public HTTPS hostname and any Redmine URL prefix. The saved URI must match exactly.</li>
-<li>Create a confidential-client secret. Store its <strong>Value</strong>, not Secret ID, in a private service file. Record its expiry and plan rotation.</li>
+<li>Create a confidential-client secret. Enter its <strong>Value</strong>, not Secret ID, in the plugin's masked Client secret field and save. It is encrypted and never displayed again. A private server file remains an optional fallback. Record expiry and plan rotation.</li>
 <li>Ensure OAuth SMTP AUTH is allowed for the sending mailbox and tenant sign-in/MFA policies permit access.</li></ol>
 <p>No application SMTP.SendAsApp, Exchange app service-principal grant, Graph User.Read/Mail.Send, implicit flow, or public-client/device-code activation is required by this implementation.</p>
 <p class="note warn">Do not disable tenant protections merely to force SMTP access. A tenant administrator may still need to approve delegated consent or mailbox protocol access.</p>
 </section>
 <section id="install"><h2>2. Install or upgrade while disabled</h2>
 <p>Verified target family: Redmine 7.0.2, Rails 8.1.4, Ruby 4.0.6, Mail 2.9.1 and net-smtp 0.5.2 on Linux. No new production gem or database migration.</p>
-<ol><li>Build using <code>tools/package.ps1</code>. Extract <code>dist/redmine_microsoft365_smtp-2.0.2.zip</code> into the Redmine plugins folder.</li>
+<ol><li>Build using <code>tools/package.ps1</code>. Extract <code>dist/redmine_microsoft365_smtp-2.0.3.zip</code> into the Redmine plugins folder.</li>
 <li>For an upgrade, disable the installed plugin and replace its entire folder during an approved change window. Do not merge individual old files.</li>
 <li>Provision private secret/state paths outside web-served locations, owned by the Redmine service account. Examples below use the account <code>redmine</code>:</li></ol>
 <pre>sudo install -d -m 700 -o redmine -g redmine /etc/redmine/secrets
 sudo install -d -m 700 -o redmine -g redmine /var/lib/redmine-m365</pre>
-<p>Provision <code>/etc/redmine/secrets/m365-client-secret</code> through an approved secure mechanism. It must contain only the client-secret value, be a regular non-symlink file, owned by root/service account, mode 0600 or stricter. Do not place secrets in shell history.</p>
+<p>Recommended UI setup: enter the secret Value on the same settings page as the tenant/client IDs. Blank preserves the saved secret; Remove page-managed secret clears it and restores server fallback. If using a fallback file instead, provision <code>/etc/redmine/secrets/m365-client-secret</code> securely as a non-symlink regular file, mode 0600, root/service owned. Never place secrets in shell history.</p>
 <table><thead><tr><th>Service environment variable</th><th>Value / purpose</th></tr></thead><tbody>
-<tr><td><code>REDMINE_M365_CLIENT_SECRET_FILE</code></td><td><code>/etc/redmine/secrets/m365-client-secret</code>; preferred secret source. Invalid configured file never falls back.</td></tr>
+<tr><td><code>REDMINE_M365_CLIENT_SECRET_FILE</code></td><td>Optional fallback only when no encrypted page secret exists. Invalid file never falls back to environment.</td></tr>
 <tr><td><code>REDMINE_M365_CLIENT_SECRET</code></td><td>Alternative secret environment value, only when no secret-file path is set.</td></tr>
 <tr><td><code>REDMINE_M365_STATE_DIRECTORY</code></td><td><code>/var/lib/redmine-m365</code>; required durable 0700 service-owned directory, no symlink paths.</td></tr>
 </tbody></table>
@@ -56,6 +56,7 @@ sudo install -d -m 700 -o redmine -g redmine /var/lib/redmine-m365</pre>
 <tr><td>Enable Microsoft 365 SMTP</td><td>Keep unchecked until connection and prerequisites are ready.</td></tr>
 <tr><td>Tenant / Application IDs</td><td>Your single-tenant registration GUIDs.</td></tr>
 <tr><td>Sending mailbox</td><td>Intended mailbox email address.</td></tr>
+<tr><td>Client secret</td><td>Entra secret Value. Masked, saved encrypted, never redisplayed. Leave blank to preserve; clear checkbox removes the page value only.</td></tr>
 <tr><td>Sender display name</td><td>Desired sender name.</td></tr>
 <tr><td>Automatic values (not inputs)</td><td>Callback is displayed read-only, derived from Redmine's configured HTTPS public URL and application prefix. EHLO uses its hostname; timeouts are fixed at 15/30 seconds. Register the displayed callback exactly in Entra.</td></tr>
 </tbody></table>

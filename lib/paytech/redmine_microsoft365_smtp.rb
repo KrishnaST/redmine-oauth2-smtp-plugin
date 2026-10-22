@@ -28,6 +28,9 @@ module Paytech::RedmineMicrosoft365Smtp
   class DeliveryError < Error; end
 end
 
+require_relative 'redmine_microsoft365_smtp/secret_cipher'
+require_relative 'redmine_microsoft365_smtp/settings_secret_service'
+require_relative 'redmine_microsoft365_smtp/settings_controller_extension'
 require_relative 'redmine_microsoft365_smtp/configuration'
 require_relative 'redmine_microsoft365_smtp/grant_store'
 require_relative 'redmine_microsoft365_smtp/token_provider'

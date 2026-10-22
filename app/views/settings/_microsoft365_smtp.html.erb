@@ -20,6 +20,17 @@
     <%= text_field_tag "settings[#{key}]", @settings[key], id: "settings_#{key}", size: 60 %>
   </p>
 <% end %>
+<p>
+  <%= label_tag 'settings_client_secret', 'Client secret' %>
+  <%= password_field_tag 'settings[client_secret]', nil, id: 'settings_client_secret', size: 60, autocomplete: 'new-password' %>
+  <em>Enter the secret Value, not its ID. Leave blank to keep the existing secret. Saved encrypted and never displayed.</em>
+</p>
+<p>
+  <%= label_tag 'settings_clear_client_secret', 'Remove page-managed secret' %>
+  <%= check_box_tag 'settings[clear_client_secret]', '1', false, id: 'settings_clear_client_secret' %>
+  <em>Falls back to the server-managed secret if one is configured.</em>
+</p>
+<p>Page-managed secret: <strong><%= @settings['client_secret_encrypted'].to_s.empty? ? 'Not set' : 'Configured (hidden)' %></strong></p>
 <p>Callback URI to register in Entra (automatic): <code><%= Paytech::RedmineMicrosoft365Smtp::Configuration.current.redirect_uri %></code></p>
-<p>SMTP server, TLS, EHLO hostname and timeouts are automatic. The application secret and encrypted-token storage are managed securely on the server.</p>
+<p>SMTP server, TLS, EHLO hostname and timeouts are automatic. The saved client secret is encrypted using Redmine's encryption key; encrypted-token storage remains managed on the server.</p>
 <p>Save while disabled, connect Microsoft, then enable and <%= link_to 'send a test email', microsoft365_smtp_test_path %>. Application and mailbox changes require reconnecting.</p>

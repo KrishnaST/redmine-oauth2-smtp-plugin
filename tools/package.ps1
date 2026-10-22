@@ -5,7 +5,7 @@ param(
 $ErrorActionPreference = 'Stop'
 $pluginRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 New-Item -ItemType Directory -Force -Path $OutputDirectory | Out-Null
-$archive = Join-Path $OutputDirectory 'redmine_microsoft365_smtp-2.0.2.zip'
+$archive = Join-Path $OutputDirectory 'redmine_microsoft365_smtp-2.0.3.zip'
 Add-Type -AssemblyName System.IO.Compression
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 $archiveStream = [System.IO.File]::Create($archive)

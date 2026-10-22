@@ -1,5 +1,18 @@
 # Verification status
 
+## Version 2.0.3 — encrypted client secret on settings page
+
+2026-10-22: 62 tests / 287 assertions passed, zero failures/errors/skips,
+seed 47617. Native read-only boot confirmed SettingsController extension,
+masked field rendering and native-key encryption round trip. Regression coverage
+includes encryption, precedence, blank preservation, clearing/fallback, forged
+ciphertext rejection, corruption/wrong-key fail-closed, invalid-input redaction,
+admin/sudo/CSRF enforcement and no interception of unrelated plugin settings.
+Initial run had a test-only undefined `params` reference; corrected to controller
+params, then reran the complete suite. Whitespace check passed. No live
+deployment, restart, database setting writes, real secrets, Microsoft sign-in or
+email submission used in these checks.
+
 ## Version 2.0.2 — simplified settings
 
 2026-10-22: 53 tests / 251 assertions, zero failures/errors/skips, seed 16491,

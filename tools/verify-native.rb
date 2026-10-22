@@ -12,7 +12,8 @@ require File.expand_path('config/environment', Dir.pwd)
 
 ActiveRecord::Base.transaction do
   ActiveRecord::Base.connection.execute('SET TRANSACTION READ ONLY')
-  raise 'Wrong plugin version' unless Redmine::Plugin.find(:redmine_microsoft365_smtp).version == '2.0.2'
+  raise 'Wrong plugin version' unless Redmine::Plugin.find(:redmine_microsoft365_smtp).version == '2.0.3'
+  raise 'Settings extension missing' unless SettingsController < Paytech::RedmineMicrosoft365Smtp::SettingsControllerExtension
   load File.join(root, 'app/controllers/microsoft365_smtp_controller.rb')
   unless ActionMailer::Base.delivery_methods[:redmine_microsoft365_smtp] == Paytech::RedmineMicrosoft365Smtp::DeliveryMethod
     raise 'Delivery method missing'
@@ -29,6 +30,9 @@ ActiveRecord::Base.transaction do
   unless settings_view.include?('data-method="post"') && settings_view.include?('>Connect Microsoft</a>') && !settings_view.include?('<form')
     raise 'Direct connect link must use native Redmine UJS POST without nested forms'
   end
+  raise 'Masked secret input missing' unless settings_view.include?('type="password"') && settings_view.include?('settings[client_secret]')
+  cipher = Paytech::RedmineMicrosoft365Smtp::SecretCipher.new
+  raise 'Secret encryption failed' unless cipher.decrypt(cipher.encrypt('native-test-only')) == 'native-test-only'
   Dir.mktmpdir('native-state-', File.dirname(root)) do |directory|
     ENV['REDMINE_M365_STATE_DIRECTORY'] = directory
     store = Paytech::RedmineMicrosoft365Smtp::GrantStore.current

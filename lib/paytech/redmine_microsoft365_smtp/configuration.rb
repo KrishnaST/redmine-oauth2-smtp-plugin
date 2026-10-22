@@ -19,10 +19,11 @@ module Paytech::RedmineMicrosoft365Smtp
           relative_url_root: Rails.application.config.relative_url_root.to_s)
     end
 
-    def initialize(settings, environment: ENV, public_url: nil, relative_url_root: '')
+    def initialize(settings, environment: ENV, public_url: nil, relative_url_root: '', secret_cipher: SecretCipher.new)
       @settings = DEFAULTS.merge(settings.to_h.transform_keys(&:to_s))
       apply_automatic_settings(public_url, relative_url_root) if public_url
       @environment = environment
+      @secret_cipher = secret_cipher
       @tenant_id = @settings['tenant_id'].to_s.strip
       @client_id = @settings['client_id'].to_s.strip
       @mailbox = @settings['mailbox'].to_s.strip
@@ -47,8 +48,11 @@ module Paytech::RedmineMicrosoft365Smtp
     end
 
     def client_secret
+      encrypted = @settings['client_secret_encrypted'].to_s
       path = @environment['REDMINE_M365_CLIENT_SECRET_FILE'].to_s
-      value = if path.empty?
+      value = if !encrypted.empty?
+                @secret_cipher.decrypt(encrypted)
+              elsif path.empty?
                 @environment['REDMINE_M365_CLIENT_SECRET'].to_s
               else
                 read_secret_file(path)

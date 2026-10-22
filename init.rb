@@ -6,7 +6,7 @@ Redmine::Plugin.register :redmine_microsoft365_smtp do
   name 'Microsoft 365 SMTP OAuth2'
   author 'Paytech'
   description 'Outbound Redmine notifications through Microsoft 365 SMTP XOAUTH2.'
-  version '2.0.2'
+  version '2.0.3'
   requires_redmine version_or_higher: '7.0.0'
   settings default: Paytech::RedmineMicrosoft365Smtp::Configuration::DEFAULTS,
            partial: 'settings/microsoft365_smtp'
@@ -22,6 +22,9 @@ ActionMailer::Base.register_interceptor(Paytech::RedmineMicrosoft365Smtp::Interc
 # Query-mode callback keeps SameSite=Lax Redmine sessions on the HTTPS return.
 # Proxies/access logs must also suppress its query string; see deployment guide.
 if defined?(Rails) && Rails.application
+  unless SettingsController < Paytech::RedmineMicrosoft365Smtp::SettingsControllerExtension
+    SettingsController.prepend(Paytech::RedmineMicrosoft365Smtp::SettingsControllerExtension)
+  end
   sensitive_parameters = [:code, :state, :error_description, :client_secret, :refresh_token, :access_token]
   Rails.application.config.filter_parameters |= sensitive_parameters
   Rails.application.env_config['action_dispatch.parameter_filter'] = Rails.application.config.filter_parameters

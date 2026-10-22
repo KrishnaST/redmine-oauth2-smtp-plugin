@@ -49,7 +49,7 @@ class FrameworkTest < Minitest::Test
     plugin.define_singleton_method(:register) { |_name, &block| registry.instance_eval(&block) }
     Redmine.const_set(:Plugin, plugin)
     2.times { load File.expand_path('../init.rb', __dir__) }
-    assert_equal '2.0.2', registry.values[:version].first.first
+    assert_equal '2.0.3', registry.values[:version].first.first
     assert_equal '0', registry.values[:settings].last[:default]['enabled']
     assert_equal 1, Mail.class_variable_get(:@@delivery_interceptors).count(Paytech::RedmineMicrosoft365Smtp::Interceptor)
   ensure
