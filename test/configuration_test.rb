@@ -30,6 +30,28 @@ class ConfigurationTest < Minitest::Test
     assert_raises(Paytech::RedmineMicrosoft365Smtp::ConfigurationError) { configuration(environment: {}).client_secret }
   end
 
+  def test_live_settings_derive_callback_and_helo_ignoring_obsolete_manual_values
+    config = Paytech::RedmineMicrosoft365Smtp::Configuration.new(
+      { 'redirect_uri' => 'https://obsolete.invalid/callback', 'helo_domain' => 'obsolete.invalid',
+        'open_timeout' => '119', 'read_timeout' => '120' },
+      public_url: 'https://redmine.example.invalid:8443', relative_url_root: '/redmine'
+    )
+    assert_equal 'https://redmine.example.invalid:8443/redmine/admin/microsoft365_smtp/callback', config.redirect_uri
+    assert_equal 'redmine.example.invalid', config.helo_domain
+    assert_equal '15', config.instance_variable_get(:@settings)['open_timeout']
+    assert_equal '30', config.instance_variable_get(:@settings)['read_timeout']
+  end
+
+  def test_public_url_path_is_not_duplicated_and_insecure_or_untrusted_urls_fail
+    config = Paytech::RedmineMicrosoft365Smtp::Configuration.new({}, public_url: 'https://example.invalid/redmine/', relative_url_root: '/redmine')
+    assert_equal 'https://example.invalid/redmine/admin/microsoft365_smtp/callback', config.redirect_uri
+    ['http://example.invalid', 'https://user:password@example.invalid', 'https://example.invalid?host=other'].each do |url|
+      assert_raises(Paytech::RedmineMicrosoft365Smtp::ConfigurationError) do
+        Paytech::RedmineMicrosoft365Smtp::Configuration.new({}, public_url: url)
+      end
+    end
+  end
+
   def test_callback_requires_https_exact_path_and_no_query_or_credentials
     configuration.validate_browser!
     ['', 'http://redmine.example.invalid/admin/microsoft365_smtp/callback',

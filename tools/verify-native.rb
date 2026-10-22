@@ -12,7 +12,7 @@ require File.expand_path('config/environment', Dir.pwd)
 
 ActiveRecord::Base.transaction do
   ActiveRecord::Base.connection.execute('SET TRANSACTION READ ONLY')
-  raise 'Wrong plugin version' unless Redmine::Plugin.find(:redmine_microsoft365_smtp).version == '2.0.1'
+  raise 'Wrong plugin version' unless Redmine::Plugin.find(:redmine_microsoft365_smtp).version == '2.0.2'
   load File.join(root, 'app/controllers/microsoft365_smtp_controller.rb')
   unless ActionMailer::Base.delivery_methods[:redmine_microsoft365_smtp] == Paytech::RedmineMicrosoft365Smtp::DeliveryMethod
     raise 'Delivery method missing'

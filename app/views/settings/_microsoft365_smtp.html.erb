@@ -14,15 +14,12 @@
   <%= hidden_field_tag 'settings[enabled]', '0', id: nil %>
   <%= check_box_tag 'settings[enabled]', '1', @settings['enabled'] == '1', id: 'settings_enabled' %>
 </p>
-<% [['tenant_id', 'Tenant ID (GUID)'], ['client_id', 'Application / Client ID (GUID)'], ['mailbox', 'Sending mailbox'], ['redirect_uri', 'Registered HTTPS Web callback URI'], ['sender_name', 'Sender display name'], ['helo_domain', 'EHLO domain'], ['open_timeout', 'Connection timeout (seconds)'], ['read_timeout', 'Read timeout (seconds)']].each do |key, title| %>
+<% [['tenant_id', 'Tenant ID (GUID)'], ['client_id', 'Application / Client ID (GUID)'], ['mailbox', 'Sending mailbox'], ['sender_name', 'Sender display name']].each do |key, title| %>
   <p>
     <%= label_tag "settings_#{key}", title %>
     <%= text_field_tag "settings[#{key}]", @settings[key], id: "settings_#{key}", size: 60 %>
   </p>
 <% end %>
-<p>The SMTP endpoint is fixed to smtp.office365.com:587, with required STARTTLS and certificate verification.</p>
-<p>Configure REDMINE_M365_CLIENT_SECRET_FILE in the Redmine service environment, pointing to a private 0600 file. Alternatively use REDMINE_M365_CLIENT_SECRET. Credentials are never stored in these settings.</p>
-<p>Use delegated SMTP.Send and offline_access with browser sign-in + S256 PKCE. SMTP.SendAsApp is not used. SMTP AUTH and tenant sign-in policies must allow this mailbox.</p>
-<p>Provision REDMINE_M365_STATE_DIRECTORY as a private 0700 directory outside web-served paths. OAuth grants are encrypted with a key derived from Redmine's secret_key_base. All workers must share the same directory and key.</p>
-<p>Save settings while disabled, then <%= link_to 'connect the Microsoft mailbox', microsoft365_smtp_connection_path %>. Changing tenant, client, mailbox or callback URI requires reconnecting.</p>
-<p>Save these settings first, then <%= link_to 'open the test-email page', microsoft365_smtp_test_path %>.</p>
+<p>Callback URI to register in Entra (automatic): <code><%= Paytech::RedmineMicrosoft365Smtp::Configuration.current.redirect_uri %></code></p>
+<p>SMTP server, TLS, EHLO hostname and timeouts are automatic. The application secret and encrypted-token storage are managed securely on the server.</p>
+<p>Save while disabled, connect Microsoft, then enable and <%= link_to 'send a test email', microsoft365_smtp_test_path %>. Application and mailbox changes require reconnecting.</p>

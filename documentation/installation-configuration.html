@@ -18,7 +18,7 @@ table{border-collapse:collapse;width:100%;font-size:14px}td,th{text-align:left;v
 </style>
 </head>
 <body><main>
-<header><div class="tag">PAYTECH · COM.PAYTECH · VERSION 2.0.1</div>
+<header><div class="tag">PAYTECH · COM.PAYTECH · VERSION 2.0.2</div>
 <h1>Microsoft 365 SMTP for Redmine</h1>
 <p>Browser sign-in + S256 PKCE · Delegated SMTP.Send · Native outgoing notifications</p>
 <p class="note">Version 2 replaces application-only authentication. It does not use SMTP.SendAsApp. Existing installations must configure a Web callback and connect interactively. Installation does not enable sending.</p>
@@ -35,7 +35,7 @@ table{border-collapse:collapse;width:100%;font-size:14px}td,th{text-align:left;v
 </section>
 <section id="install"><h2>2. Install or upgrade while disabled</h2>
 <p>Verified target family: Redmine 7.0.2, Rails 8.1.4, Ruby 4.0.6, Mail 2.9.1 and net-smtp 0.5.2 on Linux. No new production gem or database migration.</p>
-<ol><li>Build using <code>tools/package.ps1</code>. Extract <code>dist/redmine_microsoft365_smtp-2.0.1.zip</code> into the Redmine plugins folder.</li>
+<ol><li>Build using <code>tools/package.ps1</code>. Extract <code>dist/redmine_microsoft365_smtp-2.0.2.zip</code> into the Redmine plugins folder.</li>
 <li>For an upgrade, disable the installed plugin and replace its entire folder during an approved change window. Do not merge individual old files.</li>
 <li>Provision private secret/state paths outside web-served locations, owned by the Redmine service account. Examples below use the account <code>redmine</code>:</li></ol>
 <pre>sudo install -d -m 700 -o redmine -g redmine /etc/redmine/secrets
@@ -56,9 +56,8 @@ sudo install -d -m 700 -o redmine -g redmine /var/lib/redmine-m365</pre>
 <tr><td>Enable Microsoft 365 SMTP</td><td>Keep unchecked until connection and prerequisites are ready.</td></tr>
 <tr><td>Tenant / Application IDs</td><td>Your single-tenant registration GUIDs.</td></tr>
 <tr><td>Sending mailbox</td><td>Intended mailbox email address.</td></tr>
-<tr><td>Registered HTTPS Web callback URI</td><td>Exact public URL registered in Entra, including Redmine prefix if present.</td></tr>
-<tr><td>Sender display name / EHLO</td><td>Desired sender name and actual server hostname.</td></tr>
-<tr><td>Timeouts</td><td>15-second connection / 30-second read defaults; allowed range 1–120.</td></tr>
+<tr><td>Sender display name</td><td>Desired sender name.</td></tr>
+<tr><td>Automatic values (not inputs)</td><td>Callback is displayed read-only, derived from Redmine's configured HTTPS public URL and application prefix. EHLO uses its hostname; timeouts are fixed at 15/30 seconds. Register the displayed callback exactly in Entra.</td></tr>
 </tbody></table>
 <ol><li>Save settings while disabled.</li><li>Click the blue <strong>Connect Microsoft</strong> button directly on the settings page. It opens Microsoft sign-in without an intermediate page. The connection-status link provides status and disconnect controls.</li>
 <li>Sign in to Microsoft as the intended sending mailbox. Complete consent/MFA. Return in the same logged-in Redmine administrator browser session.</li>

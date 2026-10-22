@@ -1,6 +1,6 @@
 # Paytech Redmine Microsoft 365 SMTP OAuth2
 
-Version **2.0.1**: delegated Microsoft browser authorization with **S256 PKCE**.
+Version **2.0.2**: delegated Microsoft browser authorization with **S256 PKCE**.
 The settings page includes a direct **Connect Microsoft** button, like the
 reference email sender. Save settings, then click once to open Microsoft sign-in.
 Native Redmine UJS uses a CSRF-protected POST, not a state-changing GET or nested form.
@@ -43,7 +43,7 @@ delivery. An authorized real test is required before enabling ordinary traffic.
 ## Installation and upgrade
 
 1. Package with `./tools/package.ps1` in PowerShell. Output:
-   `dist/redmine_microsoft365_smtp-2.0.1.zip`.
+   `dist/redmine_microsoft365_smtp-2.0.2.zip`.
 2. Disable any installed version first. Deploy during an approved change window.
    Replace the whole plugin directory, not individual files; preserve private
    operational secrets outside the plugin tree. No migrations are needed.
@@ -60,9 +60,13 @@ delivery. An authorized real test is required before enabling ordinary traffic.
    and analytics. Do not enable HTTP/SMTP debug/body logging. Rails filters
    `code`, `state`, `error_description`, client secrets and tokens. Query-mode
    callback needs the same logged-in administrator session (SameSite=Lax cookie).
-7. Restart Redmine web/workers. Save tenant/client GUIDs, mailbox, callback URI,
-   sender name, EHLO hostname and timeouts in Administration → Plugins →
+7. Restart Redmine web/workers. Save tenant/client GUIDs, mailbox and
+   sender name in Administration → Plugins →
    Microsoft 365 SMTP OAuth2 → Configure, **while disabled**.
+   The callback URI is displayed read-only and derived from trusted Redmine
+   Administration → Settings public hostname/protocol and application URL prefix.
+   EHLO uses that hostname; timeouts are 15/30 seconds. Obsolete per-plugin
+   callback/EHLO/timeout values are ignored. HTTPS is required.
 8. Click **Connect Microsoft** directly on the settings page (or Connect/reconnect
    on the connection page), complete
    Microsoft sign-in/MFA/consent, then return to the same Redmine admin session.

@@ -1,5 +1,15 @@
 # Verification status
 
+## Version 2.0.2 — simplified settings
+
+2026-10-22: 53 tests / 251 assertions, zero failures/errors/skips, seed 16491,
+against the target bundle in isolation. Native read-only boot/rendering passed.
+Regression checks cover removal of callback/EHLO/timeout inputs, trusted public
+URL callback derivation with port/prefix handling, rejection of unsafe origins,
+fixed timeout defaults and ignoring obsolete manual values. Whitespace check
+passed. No live deployment, settings/credential edits, restart or Microsoft
+authorization/email submission was performed for this change.
+
 ## Version 2.0.1 — direct Connect Microsoft button
 
 2026-10-22: 51 tests, 235 assertions, zero failures/errors/skips, seed 36631,

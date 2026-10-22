@@ -6,7 +6,7 @@ Redmine::Plugin.register :redmine_microsoft365_smtp do
   name 'Microsoft 365 SMTP OAuth2'
   author 'Paytech'
   description 'Outbound Redmine notifications through Microsoft 365 SMTP XOAUTH2.'
-  version '2.0.1'
+  version '2.0.2'
   requires_redmine version_or_higher: '7.0.0'
   settings default: Paytech::RedmineMicrosoft365Smtp::Configuration::DEFAULTS,
            partial: 'settings/microsoft365_smtp'

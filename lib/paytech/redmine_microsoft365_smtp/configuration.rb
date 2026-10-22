@@ -14,11 +14,14 @@ module Paytech::RedmineMicrosoft365Smtp
                 :open_timeout, :read_timeout, :redirect_uri
 
     def self.current
-      new(Setting.plugin_redmine_microsoft365_smtp)
+      new(Setting.plugin_redmine_microsoft365_smtp,
+          public_url: "#{Setting.protocol}://#{Setting.host_name}",
+          relative_url_root: Rails.application.config.relative_url_root.to_s)
     end
 
-    def initialize(settings, environment: ENV)
+    def initialize(settings, environment: ENV, public_url: nil, relative_url_root: '')
       @settings = DEFAULTS.merge(settings.to_h.transform_keys(&:to_s))
+      apply_automatic_settings(public_url, relative_url_root) if public_url
       @environment = environment
       @tenant_id = @settings['tenant_id'].to_s.strip
       @client_id = @settings['client_id'].to_s.strip
@@ -79,6 +82,27 @@ module Paytech::RedmineMicrosoft365Smtp
     end
 
     private
+
+    # Use trusted Redmine administration settings, never the incoming Host header.
+    # Ignore obsolete per-plugin callback/EHLO/timeout values on live loads.
+    def apply_automatic_settings(public_url, relative_url_root)
+      uri = URI.parse(public_url)
+      unless uri.scheme == 'https' && uri.host && !uri.userinfo && !uri.query && !uri.fragment
+        raise ConfigurationError, 'INVALID_PUBLIC_URL'
+      end
+      prefix = uri.path.to_s.sub(%r{/$}, '')
+      prefix = relative_url_root.sub(%r{/$}, '') if prefix.empty?
+      unless prefix.empty? || (prefix.start_with?('/') && !prefix.include?('?') && !prefix.include?('#'))
+        raise ConfigurationError, 'INVALID_PUBLIC_URL'
+      end
+      uri.path = "#{prefix}/admin/microsoft365_smtp/callback"
+      @settings['redirect_uri'] = uri.to_s
+      @settings['helo_domain'] = uri.host
+      @settings['open_timeout'] = '15'
+      @settings['read_timeout'] = '30'
+    rescue URI::InvalidURIError
+      raise ConfigurationError, 'INVALID_PUBLIC_URL', cause: nil
+    end
 
     def bounded_timeout(value)
       number = Integer(value, 10)
