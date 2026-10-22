@@ -1,0 +1,16 @@
+<p><strong>Outbound notifications only.</strong> No incoming email or ticket creation. Disabled by default.</p>
+<p>
+  <label for="settings_enabled">Enable Microsoft 365 SMTP</label>
+  <%= hidden_field_tag 'settings[enabled]', '0', id: nil %>
+  <%= check_box_tag 'settings[enabled]', '1', @settings['enabled'] == '1', id: 'settings_enabled' %>
+</p>
+<% [['tenant_id', 'Tenant ID (GUID)'], ['client_id', 'Application / Client ID (GUID)'], ['mailbox', 'Sending mailbox'], ['sender_name', 'Sender display name'], ['helo_domain', 'EHLO domain'], ['open_timeout', 'Connection timeout (seconds)'], ['read_timeout', 'Read timeout (seconds)']].each do |key, title| %>
+  <p>
+    <%= label_tag "settings_#{key}", title %>
+    <%= text_field_tag "settings[#{key}]", @settings[key], id: "settings_#{key}", size: 60 %>
+  </p>
+<% end %>
+<p>The SMTP endpoint is fixed to smtp.office365.com:587, with required STARTTLS and certificate verification.</p>
+<p>Configure REDMINE_M365_CLIENT_SECRET_FILE in the Redmine service environment, pointing to a private 0600 file. Alternatively use REDMINE_M365_CLIENT_SECRET. Credentials are never stored in these settings.</p>
+<p>Configure SMTP.SendAsApp with tenant admin consent and restrict Exchange permissions to the sending mailbox. SMTP AUTH must be available for that mailbox.</p>
+<p>Save these settings first, then <%= link_to 'open the test-email page', microsoft365_smtp_test_path %>.</p>

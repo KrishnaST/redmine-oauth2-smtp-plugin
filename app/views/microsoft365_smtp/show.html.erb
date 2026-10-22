@@ -1,0 +1,7 @@
+<h2>Microsoft 365 SMTP test</h2>
+<p>This sends one test email to the signed-in administrator's own primary email address. It does not read incoming mail or create a ticket.</p>
+<p>Save the plugin configuration and enable it before testing. Microsoft accepting SMTP submission does not guarantee inbox delivery.</p>
+<%= form_tag microsoft365_smtp_test_path, method: :post do %>
+  <%= submit_tag 'Send one test email to me', data: { confirm: 'Send one Microsoft 365 SMTP test email to your own administrator mailbox?' } %>
+<% end %>
+<p><%= link_to 'Plugin settings', plugin_settings_path('redmine_microsoft365_smtp') %></p>

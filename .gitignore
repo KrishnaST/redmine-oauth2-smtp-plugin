@@ -1,0 +1,7 @@
+*.gem
+*.zip
+coverage/
+dist/
+tmp/
+.env
+*.secret
