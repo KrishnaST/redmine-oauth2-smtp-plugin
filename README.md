@@ -1,5 +1,7 @@
 # Paytech Redmine Microsoft 365 SMTP OAuth2
 
+Original plugin code and documentation are dedicated to the public domain under **CC0-1.0 (Creative Commons Zero 1.0 Universal)**. See [LICENSE](LICENSE) and [licensing scope](documentation/LICENSING.md). Redmine and third-party dependencies retain their original licenses.
+
 Version **2.0.3**: delegated Microsoft browser authorization with **S256 PKCE**.
 The settings page includes a direct **Connect Microsoft** button, like the
 reference email sender. Save settings, then click once to open Microsoft sign-in.

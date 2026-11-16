@@ -11,7 +11,7 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem
 $archiveStream = [System.IO.File]::Create($archive)
 $zipArchive = [System.IO.Compression.ZipArchive]::new($archiveStream, [System.IO.Compression.ZipArchiveMode]::Create)
 try {
-    $includedNames = @('app', 'config', 'documentation', 'lib', 'test', 'tools', 'init.rb', 'README.md', '.gitignore')
+    $includedNames = @('app', 'config', 'documentation', 'lib', 'test', 'tools', 'init.rb', 'README.md', 'LICENSE', '.gitignore')
     foreach ($includedName in $includedNames) {
         $includedPath = Join-Path $pluginRoot $includedName
         $includedItem = Get-Item -LiteralPath $includedPath -Force

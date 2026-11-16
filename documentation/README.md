@@ -1,5 +1,7 @@
 # Documentation index
 
+- [CC0 dedication and third-party licensing scope](LICENSING.md)
+- [Current global instructions](Codex-Global-AGENTS.md)
 - [Client secret on the configuration page](page-client-secret.md): encrypted save, preservation/clear behavior and fallback precedence.
 
 - [Simplified settings](simplified-settings.md): removed inputs, trusted public URL derivation and upgrade behavior.

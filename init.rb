@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+# SPDX-License-Identifier: CC0-1.0
 
 require_relative 'lib/paytech/redmine_microsoft365_smtp'
 
